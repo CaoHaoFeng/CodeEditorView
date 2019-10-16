@@ -14,7 +14,7 @@ public class MainActivity extends Activity
         setContentView(R.layout.main);
 		
 		CodeEditorView mCodeEditorView = findViewById(R.id.code);
-		mCodeEditorView.setText(fileread("/storage/emulated/0/AppProjects/CodeEditorView/CodeEditorView/app/src/main/java/com/summerain0/widget/editor/CodeEditorView.java"));
+		mCodeEditorView.setText(fileread("/storage/emulated/0/AppProjects/大文本编辑器/CodeEditorView/app/src/main/java/com/summerain0/widget/editor/CodeEditorView.java"));
 		
     }
 	

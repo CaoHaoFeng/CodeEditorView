@@ -55,6 +55,8 @@ public class CodeEditorView extends View
 	private Paint mTextPaint;
 	// 是否可编辑
 	private boolean mIsEditable = false;
+	// 原字体大小
+	private int mLastTextSize = DEFAULT_TEXT_SIZE;
 	// 字体大小
 	private int mTextSize = DEFAULT_TEXT_SIZE;
 	// 绘画原点坐标
@@ -72,7 +74,10 @@ public class CodeEditorView extends View
 
 	// 正文
 	ArrayList<String> mTextArrayList = new ArrayList<String>();
-
+	// 缩放锁
+	boolean mZooming = false;
+	// 原两指间距离
+	double mPointersDistance = 0;
 
 	// 构造方法
 	public CodeEditorView(Context context)
@@ -162,6 +167,7 @@ public class CodeEditorView extends View
 		{
 			// 拦截事件
 			getParent().requestDisallowInterceptTouchEvent(true);
+			onZoomTouchEvent(event);
 			mGestureDetector.onTouchEvent(event);
 		}
 		else
@@ -175,13 +181,52 @@ public class CodeEditorView extends View
 		return super.onTouchEvent(event);
 	}
 
+	// 两指缩放
+	public void onZoomTouchEvent(MotionEvent e)
+	{
+		switch (e.getAction())
+		{
+			case MotionEvent.ACTION_MOVE:
+				if (e.getPointerCount() == 2)
+				{
+					// 获取坐标
+					float x1 = e.getX(0);
+					float y1 = e.getY(0);
+					float x2 = e.getX(1);
+					float y2 = e.getY(1);
+					// 判断
+					if (!mZooming)
+					{
+						mLastTextSize = mTextSize;
+						mPointersDistance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1 , 2));
+						mZooming = true;
+					}
+					// 实时距离
+					double mDistance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1 , 2));
+					// 相减后换算为字体大小
+					mTextSize = (int)(mLastTextSize + (mDistance - mPointersDistance) / 50);
+					this.setTextSize(mTextSize);
+				}
+				break;
+
+			case MotionEvent.ACTION_UP:
+				mLastTextSize = mTextSize;
+				mZooming = false;
+				break;
+		}
+	}
+	
 	@Override
 	public void onDraw(Canvas canvas)
 	{
+		long a = System.currentTimeMillis();
+		
 		// 绘制行号
 		drawLineText(canvas);
 		// 绘制文本
 		drawText(canvas);
+
+		canvas.drawText(mLastTextSize + "  " + mTextSize + "  " + (1000 / (System.currentTimeMillis() - a)), 0, getHeight(), mTextPaint);
 		super.onDraw(canvas);
 	}
 
@@ -345,6 +390,10 @@ public class CodeEditorView extends View
 		// 更新字体大小
 		Paint.FontMetrics fontMetrics = mLineTextPaint.getFontMetrics();
 		mTextHeight = fontMetrics.descent - fontMetrics.ascent;
+		// 更新数据
+		mLineTextPaint.setTextSize(mTextSize);
+		mTextPaint.setTextSize(mTextSize);
+		// 刷新
 		invalidate();
 	}
 
@@ -352,7 +401,7 @@ public class CodeEditorView extends View
 	 * 获取字体大小
 	 * @rerurn int 字体大小
 	 */
-	public int getTextSize(int size)
+	public int getTextSize()
 	{
 		return this.mTextSize;
 	}

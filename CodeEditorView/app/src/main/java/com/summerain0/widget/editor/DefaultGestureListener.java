@@ -3,6 +3,7 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import com.summerain0.widget.editor.CodeEditorView;
+import android.widget.Toast;
 
 /*
  * 默认的手势检测
@@ -43,7 +44,7 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 	{
-		// 滑动
+		// 单指滑动
 		if (e2.getPointerCount() == 1)
 		{
 			if (Math.abs(distanceX) > Math.abs(distanceY))
@@ -65,9 +66,12 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	public boolean onDown(MotionEvent e)
 	{
 		// 若正在惯性滑动，则强行停止
-		if (!mCodeEditorView.isFlingScrollFinished())
+		if (e.getPointerCount() == 1)
 		{
-			mCodeEditorView.stopFlingScroll();
+			if (!mCodeEditorView.isFlingScrollFinished())
+			{
+				mCodeEditorView.stopFlingScroll();
+			}
 		}
 		return super.onDown(e);
 	}
