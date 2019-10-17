@@ -13,6 +13,7 @@
  * void scrollBy(int x, int y) 移动至当前相对的位置
  * void setText(String text) 设置文本
  * String getText() 获取文本
+ * void showLineNumber(boolean boo) 是否显示行号
  * 
  */
 package com.summerain0.widget.editor;
@@ -60,6 +61,8 @@ public class CodeEditorView extends View
 	private Paint mTextPaint;
 	// 是否可编辑
 	private boolean mIsEditable = false;
+	// 是否显示行号
+	private boolean mIsShowLineNumber = true;
 	// 原字体大小
 	private int mLastTextSize = DEFAULT_TEXT_SIZE;
 	// 字体大小
@@ -265,7 +268,10 @@ public class CodeEditorView extends View
 		// 总行数
 		int allLine = mTextArrayList.size();
 		// 计算偏移值
-		mLeftOffset = mLineTextPaint.measureText(mTextArrayList.size() + "  ");
+		if (mIsShowLineNumber)
+			mLeftOffset = mLineTextPaint.measureText(mTextArrayList.size() + "  ");
+		else
+			mLeftOffset = 0;
 		// 实时计算最大值
 		calculateMaxScrollX();
 		calculateMaxScrollY();
@@ -275,10 +281,11 @@ public class CodeEditorView extends View
 		mDrawEndLine = (int)((mScrollY + getHeight()) / mTextHeight) + mCacheLine;
 		mDrawEndLine = mDrawEndLine > allLine ? allLine : mDrawEndLine;
 		// 绘制开始
-		for (int i = mDrawStartLine;i < mDrawEndLine;i++)
-		{
-			canvas.drawText(String.valueOf(i + 1), 0 - mScrollX, mTextHeight * (i + 1) - mScrollY, mLineTextPaint);
-		}
+		if (mIsShowLineNumber)
+			for (int i = mDrawStartLine;i < mDrawEndLine;i++)
+			{
+				canvas.drawText(String.valueOf(i + 1), 0 - mScrollX, mTextHeight * (i + 1) - mScrollY, mLineTextPaint);
+			}
 	}
 
 	// 绘制文本
@@ -385,6 +392,16 @@ public class CodeEditorView extends View
 	public boolean isCanEditable()
 	{
 		return this.mIsEditable;
+	}
+
+	/* 
+	 * 是否显示行号
+	 * @param boolean 是否显示
+	 */
+	public void showLineNumber(boolean boo)
+	{
+		this.mIsShowLineNumber = boo;
+		invalidate();
 	}
 
 	/*
