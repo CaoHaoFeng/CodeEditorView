@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Scroller;
 import com.summerain0.widget.editor.CodeEditorView;
+import com.summerain0.widget.editor.listener.OnSelectionChangeListener;
 import java.util.ArrayList;
 
 /*
@@ -47,6 +48,10 @@ public class CodeEditorView extends View
 	private Context mContext;
 	// 手势管理
 	private GestureDetector mGestureDetector;
+	// 剪贴板
+	private ClipboardPanel mClipboardPanel;
+	// 选中变化监听
+	private OnSelectionChangeListener mOnSelectionChangeListener;
 	// 滑动管理
 	private Scroller mScroller;
 	// 行号画笔
@@ -124,6 +129,23 @@ public class CodeEditorView extends View
 		// 手势管理
 		mGestureDetector = new GestureDetector(mContext, new DefaultGestureListener(CodeEditorView.this));
 		mGestureDetector.setIsLongpressEnabled(true);
+		// 剪贴板
+		mClipboardPanel = new ClipboardPanel(CodeEditorView.this);
+		// 选中变化监听
+		mOnSelectionChangeListener = new OnSelectionChangeListener(){
+			@Override
+			public void onChanged(boolean state, int startLine, int startPosition, int endLine, int endPosition)
+			{
+				if (state)
+				{
+					mClipboardPanel.show();
+				}
+				else
+				{
+					mClipboardPanel.dismiss();
+				}
+			}
+		};
 		// 滑动管理
 		mScroller = new Scroller(mContext);
 	}
@@ -385,6 +407,14 @@ public class CodeEditorView extends View
 	public void scrollTo(int x, int y)
 	{
 		scrollBy((int)(x - mScrollX), (int)(y - mScrollY));
+	}
+
+	/*
+	 * 选中指定文本 目前暂无具体功能
+	 */
+	public void seleteText()
+	{
+		mOnSelectionChangeListener.onChanged(true, 0, 0, 0, 0);
 	}
 
 	/*

@@ -93,6 +93,8 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	@Override
 	public void onLongPress(MotionEvent e)
 	{
+		// 弹出剪切板
+		mCodeEditorView.seleteText();
 		super.onLongPress(e);
 	}
 
