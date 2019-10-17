@@ -167,7 +167,9 @@ public class CodeEditorView extends View
 		{
 			// 拦截事件
 			getParent().requestDisallowInterceptTouchEvent(true);
+			// 缩放
 			onZoomTouchEvent(event);
+			// 手势
 			mGestureDetector.onTouchEvent(event);
 		}
 		else
@@ -182,7 +184,8 @@ public class CodeEditorView extends View
 	}
 
 	// 两指缩放
-	public void onZoomTouchEvent(MotionEvent e)
+	// 原理，计算两指间距离差
+	private void onZoomTouchEvent(MotionEvent e)
 	{
 		switch (e.getAction())
 		{
@@ -205,6 +208,7 @@ public class CodeEditorView extends View
 					double mDistance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1 , 2));
 					// 相减后换算为字体大小
 					mTextSize = (int)(mLastTextSize + (mDistance - mPointersDistance) / 50);
+					if (mTextSize < 10) mTextSize = 10;
 					this.setTextSize(mTextSize);
 				}
 				break;
@@ -215,18 +219,21 @@ public class CodeEditorView extends View
 				break;
 		}
 	}
-	
+
 	@Override
 	public void onDraw(Canvas canvas)
 	{
 		long a = System.currentTimeMillis();
-		
+
 		// 绘制行号
 		drawLineText(canvas);
 		// 绘制文本
 		drawText(canvas);
 
-		canvas.drawText(mLastTextSize + "  " + mTextSize + "  " + (1000 / (System.currentTimeMillis() - a)), 0, getHeight(), mTextPaint);
+		// 无用，查看一些参数而已
+		long time = System.currentTimeMillis() - a;
+		if (time == 0) time = 1;
+		canvas.drawText(mLastTextSize + "  " + mTextSize + "  " + (1000 / time), 0, getHeight(), mTextPaint);
 		super.onDraw(canvas);
 	}
 

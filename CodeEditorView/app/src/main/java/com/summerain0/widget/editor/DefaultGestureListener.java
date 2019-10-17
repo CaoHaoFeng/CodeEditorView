@@ -3,7 +3,6 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import com.summerain0.widget.editor.CodeEditorView;
-import android.widget.Toast;
 
 /*
  * 默认的手势检测
@@ -34,7 +33,7 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	public boolean onSingleTapUp(MotionEvent e)
 	{
 		// 判断是否可编辑
-		if (mCodeEditorView.isCanEditable())
+		if (mCodeEditorView.isCanEditable() && e.getPointerCount() == 1)
 		{
 			mCodeEditorView.showSoftInput(true);
 		}
@@ -47,6 +46,7 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 		// 单指滑动
 		if (e2.getPointerCount() == 1)
 		{
+			// 判断应该向水平还是垂直方向移动
 			if (Math.abs(distanceX) > Math.abs(distanceY))
 			{
 				direction = -1;
@@ -85,6 +85,7 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent e)
 	{
+		// 双击事件当做长按事件处理
 		onLongPress(e);
 		return super.onDoubleTapEvent(e);
 	}
@@ -99,9 +100,13 @@ public class DefaultGestureListener extends GestureDetector.SimpleOnGestureListe
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
 	{
 		// 惯性滑动
-		if (direction == -1) velocityY = 0;
-		if (direction == 1) velocityX = 0;
-		mCodeEditorView.flingScroll((int)-velocityX, (int)-velocityY);
+		if (e2.getPointerCount() == 1)
+		{
+			// 控制惯性滑动只会在一个方向上滑动
+			if (direction == -1) velocityY = 0;
+			if (direction == 1) velocityX = 0;
+			mCodeEditorView.flingScroll((int)-velocityX, (int)-velocityY);
+		}
 		onUp(e2);
 		return super.onFling(e1, e2, velocityX, velocityY);
 	}
