@@ -15,7 +15,7 @@ public class MainActivity extends Activity
 		
 		CodeEditorView mCodeEditorView = findViewById(R.id.code);
 		mCodeEditorView.setText(fileread("/storage/emulated/0/AppProjects/大文本编辑器/CodeEditorView/app/src/main/java/com/summerain0/widget/editor/CodeEditorView.java"));
-		//mCodeEditorView.showLineNumber(false);
+		mCodeEditorView.setTextSize(56);
 		
     }
 	

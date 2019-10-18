@@ -14,7 +14,7 @@
  * void setText(String text) 设置文本
  * String getText() 获取文本
  * void showLineNumber(boolean boo) 是否显示行号
- * 
+ * 233
  */
 package com.summerain0.widget.editor;
 import android.content.Context;
@@ -31,6 +31,9 @@ import android.widget.Scroller;
 import com.summerain0.widget.editor.CodeEditorView;
 import com.summerain0.widget.editor.listener.OnSelectionChangeListener;
 import java.util.ArrayList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import com.summerain0.R;
 
 /*
  * 代码编辑器控件
@@ -79,14 +82,21 @@ public class CodeEditorView extends View
 	private float mTextHeight = 0;
 	// 正文偏移
 	private float mLeftOffset = 0;
-
+	// 缩放锁
+	private boolean mZooming = false;
+	// 原两指间距离
+	private double mPointersDistance = 0;
+	
 	// 正文
 	ArrayList<String> mTextArrayList = new ArrayList<String>();
-	// 缩放锁
-	boolean mZooming = false;
-	// 原两指间距离
-	double mPointersDistance = 0;
-
+	// 光标左图片
+	private Bitmap mCursorLeftBitmap;
+	// 光标右图片
+	private Bitmap mCursorRightBitmap;
+	// 选中光标长宽
+	private float mSelectCursorBitmapWidth = 0,mSelectCursorBitmapHeight = 0;
+	// 指向光标长宽
+	
 	// 构造方法
 	public CodeEditorView(Context context)
 	{
@@ -129,6 +139,13 @@ public class CodeEditorView extends View
 	// 初始化
 	private void init()
 	{
+		// 初始化图片
+		mCursorLeftBitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.abc_text_select_handle_left_mtrl_light);
+		mCursorRightBitmap = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.abc_text_select_handle_right_mtrl_light);
+		// 保存长宽
+		mSelectCursorBitmapWidth = mCursorLeftBitmap.getWidth();
+		mSelectCursorBitmapHeight = mCursorLeftBitmap.getHeight();
+		
 		// 手势管理
 		mGestureDetector = new GestureDetector(mContext, new DefaultGestureListener(CodeEditorView.this));
 		mGestureDetector.setIsLongpressEnabled(true);
